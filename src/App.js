@@ -1,9 +1,9 @@
-import Mobile from './components/Mobile';
+import OTPGenerator from "./components/Mobile";
 
 function App() {
   return (
     <div className="App">
-      <Mobile></Mobile>
+      <OTPGenerator></OTPGenerator>
     </div>
   );
 }
