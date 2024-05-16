@@ -1,49 +1,50 @@
 import axios from "axios";
-const  OTPGenerator = () => {
-    const [mobile , setMobile] = usestate('');
-    const [error, setError] = usestate('');
-    const [success, setSuccess] = useState(false);
+import { useState } from "react";
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        
-        if(!/^[6-9]\d{9}$/.test(mobile)){
-            setError('Invalid mobile number.');
-            return;
+const OTPGenerator = () => {
+    const [mobile, setMobile] = useState("");
+    const [otp, setOtp] = useState("");
+
+    const handleGetOTP = async () => {
+        try {
+            const response = await axios.post(
+                "https://cdn-api.co-vin.in/api/v2/auth/public/generateOTP",
+                { mobile: parseInt(mobile) }
+            );
+        } catch (err) {
+            console.log(err);
         }
-        try{
-          const response = await axios.post(
-            'https://cdn-api.co-vin.in/api/v2/auth/public/generateOTP',
-            { mobile: parseInt (mobile) }
-          );
-          setSuccess(true);
-          setMobile('')
-          setTimeout(() => setSuccess(false) , 120000);
-          }catch(err){
-            setError(err.response.data.error);
-          } 
-        
-
     };
-    return(
+
+    const handleVerifyOTP = async () => {
+        try {
+            const verifyResponse = await axios.post(
+                "https://cdn-api.co-vin.in/api/v2/auth/public/confirmOTP",
+                { mobile: parseInt(mobile), otp: parseInt(otp) }
+            );
+            alert("success");
+        } catch (err) {
+            alert("error");
+            console.log(err);
+        }
+    };
+
+    return (
         <div>
-            <h2>generateOTP</h2>
-            <form onSubmit={handleSubmit}>
-                <label htmlFor="mobile">Mobile number </label>
-                <input
-                className="field"
-                type="number"
-                id="mobile"
-                value={mobile}
-                onchange={(e) => setMobile(e.target.value)}
-                />
-                <button Class="button" type="submit">Get OTP</button>
-            </form>
-            {error && <p className="error">{error}</p>}
-            {success && <p className ="success">OTP SENT SUCCWSSFULLY.</p>}
+            <h2>Generate OTP</h2>
+            <input value={mobile} onChange={(e) => setMobile(e.target.value)} />
+            <button className="button" onClick={handleGetOTP}>
+                Get OTP
+            </button>
+
+            <div>
+                <input value={otp} onChange={(e) => setOtp(e.target.value)} />
+                <button className="button" onClick={handleVerifyOTP}>
+                    Verify OTP
+                </button>
+            </div>
         </div>
     );
-
 };
 
-export default OTPGenerator
+export default OTPGenerator;
